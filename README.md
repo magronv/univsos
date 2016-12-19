@@ -63,7 +63,7 @@ You can verify afterwards that this yields a valid nonnegativty certificate of f
 
 `s := 0: for i from 1 to nops(sos)/2 do s := s + sos[2*i-1]*sos[2*i]^2 od: expand (f -s);`
 
-#### Benchmarks from the paper https://hal.archives-ouvertes.fr/ensl-00445343v2/document (pages 23-24 section 5.2.5)
+#### Benchmarks from the paper https://hal.archives-ouvertes.fr/ensl-00445343v2/document (Section 6)
 #### univsos1
 
 `BenchSOSitv(f1,g1,a1,b1);`
