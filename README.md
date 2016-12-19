@@ -28,6 +28,7 @@ From the univsos/ directory, launch Maple and execute the following command:
 Let us condier the polynomial f := 1 + X + X^2 + X^3 + X^4. 
 To compute a sums of squares decomposition of f, you can:
 
+
 1) rely on univsos1
 
 `f := 1 + X + X^2 + X^3 + X^4: sos:=sos1(f,X);`
@@ -36,22 +37,21 @@ To compute a sums of squares decomposition of f, you can:
 
 The output is a list [(p1, (a1, b1, c1)),..., (pr, (ar, br, cr))], where each pi is a rational polynomial, ai*bi^2 + ci is a rational polynomial of degree at most 2, and such that f admits the Horner-like representation:
 
-f  = p1^2* [ p2^2* [ ... [pr^2 + ar * br^2 + cr]] + a2*b2^2 + c2] + a1*b1^2 + c1
+`f  = p1^2* [ p2^2* [ ... [pr^2 + ar * br^2 + cr]] + a2*b2^2 + c2] + a1*b1^2 + c1`
 
 You can verify afterwards that this yields a valid nonnegativty certificate of f with the following command:
 
 `expand(f - foldr((_e, a) -> _e[1]^2 * a + _e[2][1]*_e[2][2]^2 + _e[2][3], 1, op(sos)));`
 
+
 2) rely on univsos2
 
 `f := 1 + X + X^2 + X^3 + X^4: sos := sos2(f,X);`
 
-
-                2                      23 X   11  377      55             2                                               
-\  sos := [7/8, X  + 9/16 X - 3/4, 7/8, ---- + --, ----, 1, ---, X, 7/64, X , 9/1024, X + 1/2, 1/64, X (X + 1/2)]\
+                  2                      23 X   11  377      55             2                                               
+    sos := [7/8, X  + 9/16 X - 3/4, 7/8, ---- + --, ----, 1, ---, X, 7/64, X , 9/1024, X + 1/2, 1/64, X (X + 1/2)]
   
-  
-                                         16    16  4096     256
+                                          16    16  4096     256
                                          
                                          
 
