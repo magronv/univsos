@@ -2,14 +2,14 @@
 Sums of squares decomposition of univariate nonnegative polynomials
 
 ## Description
-`univsos` is a Maple library for computation of sums of squares decompositions of univariate nonnegative polynomials with rational coefficients. The library includes two distinct algorithms: 
+`univsos` is a Maple library for computation of sums of squares (SOS) decompositions of univariate nonnegative polynomials with rational coefficients. The library includes two distinct algorithms: 
 
 - `univsos1`, which relies on root isolation, quadratic under approximations of positive polynomials and square-free decomposition.
 - `univsos2`, which relies on root isolation of perturbed positive  polynomials and square-free decomposition.
 
 ## Installation instructions
 ### Prerequisites
-`univsos` has been tested with `Maple2016` and relies on: 
+`univsos` has been tested with `Maple2016` and requires: 
 - the external `PARI/GP` software available at the address http://pari.math.u-bordeaux.fr/download.html
 
 
@@ -35,7 +35,7 @@ To compute a sums of squares decomposition of f, you can:
 
                        sos := [[1, [1, -X, 0]], [X + 1, [0, 0, 0]], [0, [1, X - 1/2, 3/4]]]
 
-The output is a list [(p1, (a1, b1, c1)),..., (pr, (ar, br, cr))], where each pi is a rational polynomial, ai*bi^2 + ci is a rational polynomial of degree at most 2, and such that f admits the Horner-like representation:
+The output is a list [(p1, (a1, b1, c1)),..., (pr, (ar, br, cr))], where each pi is a rational polynomial, ai*bi^2 + ci is a rational polynomial of degree at most 2, and such that f admits the Horner-like decomposition:
 
 `f  = p1^2* [ p2^2* [ ... [pr^2 + ar * br^2 + cr]] + a2*b2^2 + c2] + a1*b1^2 + c1`
 
@@ -55,7 +55,10 @@ You can verify afterwards that this yields a valid nonnegativty certificate of f
                                          
                                          
 
-The output is a list [c1,p1,...,cr,pr], where each ci is a rational number and each pi is a rational polynomial
+The output is a list [c1,p1,...,cr,pr], where each ci is a rational number and each pi is a rational polynomial such that f admits the following weigthed SOS decomposition:
+
+`f  = c1*p1^2 + ... + cr*pr^2`
+
 You can verify afterwards that this yields a valid nonnegativty certificate of f with the following command:
 
 `s := 0: for i from 1 to nops(sos)/2 do s := s + sos[2*i-1]*sos[2*i]^2 od: expand (f -s);`
