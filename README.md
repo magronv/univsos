@@ -23,13 +23,15 @@ $ git clone https://github.com/magronv/univsos.git
 ### Execution and Benchmarks
 From the univsos/ directory, launch Maple and execute the following command:
 
-`with(LinearAlgebra): read "univsos1.mm": read "univsos2.mm": read "benchsunivsos.mm": read "benchsollya.mm":
+`with(LinearAlgebra): read "univsos1.mm": read "univsos2.mm": read "benchsunivsos.mm": read "benchsollya.mm":`
 
 Let us condier the polynomial f := 1 + X + X^2 + X^3 + X^4. 
 To compute a sums of squares decomposition of f, you can:
 
 1) rely on univsos1
+
 `f := 1 + X + X^2 + X^3 + X^4: sos:=sos1(f,X);`
+
 `                        sos := [[1, [1, -X, 0]], [X + 1, [0, 0, 0]], [0, [1, X - 1/2, 3/4]]]`
 
 The output is a list [(p1, (a1, b1, c1)),..., (pr, (ar, br, cr))], where each pi is a rational polynomial, ai*bi^2 + ci is a rational polynomial of degree at most 2, and such that f admits the Horner-like representation:
