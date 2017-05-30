@@ -1,4 +1,5 @@
-with(LinearAlgebra): read "univsos1.mm": read "univsos2.mm": read "benchsunivsos.mm": read "benchsollya.mm": read "univsos3.mm": read "vqeisolate6.mm": read "vqenewton.mm":
+with(LinearAlgebra): read "univsos1.mm": read "univsos2.mm": read "benchsunivsos.mm": read "benchsollya.mm": 
+# read "univsos3.mm": read "vqeisolate6.mm": read "vqenewton.mm":
 # Benchmarks from the paper https://hal.archives-ouvertes.fr/ensl-00445343v2/document (pages 23-24 section 5.2.5)
 # univsos1
 BenchSOSitv(f1,g1,a1,b1);

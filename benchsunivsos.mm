@@ -255,7 +255,14 @@ local i;
 end;
 
 SOSCHECK:=proc(f, sos)
-return expand(f - foldr((_e, a) -> _e[1]^2 * a + _e[2][1]*_e[2][2]^2 + _e[2][3], 1, op(sos)));
+local res;
+res := expand(f - foldr((_e, a) -> _e[1]^2 * a + _e[2][1]*_e[2][2]^2 + _e[2][3], 1, op(sos)));
+if res = 0 then
+return res;
+else 
+    lprint(f); lprint(sos);
+    error "Invalid sum of squares decomposition";
+fi;
 end;
 
 TimeVerif2:=proc(f,sos,n)
@@ -270,10 +277,16 @@ SOSCHECKn2:=proc(f,sos,n)
 end;
 
 SOSCHECK2:=proc(f, sos)
-  local s,i;
+  local s,i,res;
   s := 0;
   for i from 1 to nops(sos)/2 do s := s + sos[2*i-1]*sos[2*i]^2 od:
-  return expand(f - s);
+  res := expand(f-s);
+  if res = 0 then
+  return res;
+  else 
+    lprint(f); lprint(sos);
+    error "Invalid sum of squares decomposition";
+fi;
 end;
 
 SOSCHECKitv3:=proc(f, a, b, sos, sos2)
