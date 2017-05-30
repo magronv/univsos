@@ -1,7 +1,11 @@
 $define debugt false
+$define displayHorner false
 
 sos1 := proc(f, X)
-  return SOSDecomp(expand(f),X,0):
+  local s;
+  s := SOSDecomp(expand(f),X,0):
+  if displayHorner then return s;
+  else return HornerToList1(s); fi;
 end;
 
 SOSDecomp:=proc(f, X, prec::integer := 8)
@@ -505,4 +509,10 @@ end;
 
 MulPolList:= proc(p, l)
   map (el -> p*el, l)
+end;
+
+HornerToList1 := proc(l)
+  local l1;
+  l1 := HornerToList(l);
+  return foldr((a,b) -> [op(a),op(b)], [],op(l1));
 end;

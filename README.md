@@ -33,6 +33,18 @@ To compute a sums of squares decomposition of f, you can:
 
 `f := 1 + X + X^2 + X^3 + X^4: sos:=sos1(f,X);`
 
+                      sos := [1, 0, 1, (X + 1) (X - 1/2), 3/4, X + 1, 1, -X]
+
+The output is a list [c1,p1,...,cr,pr], where each ci is a rational number and each pi is a rational polynomial such that f admits the following weigthed SOS decomposition:
+
+`f  = c1*p1^2 + ... + cr*pr^2`
+
+You can verify afterwards that this yields a valid nonnegativty certificate of f with the following command:
+
+`s := 0: for i from 1 to nops(sos)/2 do s := s + sos[2*i-1]*sos[2*i]^2 od: expand (f -s);`
+
+
+<!---
                        sos := [[1, [1, X/2 + 1, 0]], [X, [0, 0, 0]], [0, [1, X + 1/2, 1/2]]]
 
 The output is a list [(p1, (a1, b1, c1)),..., (pr, (ar, br, cr))], where each pi is a rational polynomial, ai*bi^2 + ci is a rational polynomial of degree at most 2, and such that f admits the Horner-like decomposition:
@@ -42,7 +54,7 @@ The output is a list [(p1, (a1, b1, c1)),..., (pr, (ar, br, cr))], where each pi
 You can verify afterwards that this yields a valid nonnegativty certificate of f with the following command:
 
 `expand(f - foldr((_e, a) -> _e[1]^2 * a + _e[2][1]*_e[2][2]^2 + _e[2][3], 1, op(sos)));`
-
+-->
 
 2) rely on univsos2
 
