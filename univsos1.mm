@@ -1,14 +1,18 @@
 $define debugt false
+$define displayHorner false
 
 sos1 := proc(f, X)
-  return SOSDecomp(f,X):
+  local s;
+  s := SOSDecomp(expand(f),X,0):
+  if displayHorner then return s;
+  else return HornerToList1(s); fi;
 end;
 
 SOSDecomp:=proc(f, X, prec::integer := 8)
 local g, h, S, SEVEN, SODD, newF;
 
 if degree(f)=0 and f<0 then lprint(f): error "There is no decomposition into sum of squares for this polynomial"; fi;
-if degree(f)=0 and f>=0 then return [[0,[f,0,0]]]; fi;
+if degree(f)=0 and f>=0 then return [[0,[0,0,f]]]; fi;
 if f=0 then return [[0,[0,0,0]]]; fi;
 if lcoeff(f, X)<0 then lprint(f): error "There is no decomposition into sum of squares for this polynomial"; fi;
 if irem(degree(f), 2)=1 then 
@@ -101,18 +105,18 @@ local a,b,c, mycouple;
 if f=0 then return [f,0,0] fi;
 
 #VM if degree(f)=0 and f>0 then return [[[f],[1]]]; fi;
-if degree(f)=0 and f>0 then return [f,0,0]; fi;
+if degree(f)=0 and f>0 then return [0,0,f]; fi;
 
 if degree(f)=1 or (degree(f)=0 and f<0) or coeff(f,X,2)<0 or coeff(f,X,1)^2 - 4*coeff(f,X,2)*coeff(f,X,0) > 0 then 
     lprint(f):
     error "There is no decomposition into sum of squares for this polynomial"; 
 fi;
 
-if nops(f)=3 then
-c,b,a:=coeffs(f): #coeff(f, X, 2), coeff(f, X, 1), coeff(f, X, 0);
-else 
+#if nops(f)=3 then
+#c,b,a:=coeffs(f): #coeff(f, X, 2), coeff(f, X, 1), coeff(f, X, 0);
+#else 
 c,b,a:=seq(coeff(f,X,i),i=0..2):
-fi;
+#fi;
 
 #Attention j'ai vire les racines carrees pour aller plus vite
 #VM mycouple:=[[[a],[X+b/(2*a)]],[[(c-b^2/(4*a))], [1]]];
@@ -139,7 +143,10 @@ local i, inv_roots1, smallest, sf, sdf, g, t, df, values, mymin, minimizer, a,b,
 	_interval:=inv_roots1[i]:
     fi:
   od:
-  if minimizer[1] < 0 then t:= ceil(minimizer[1]): else t:= floor(minimizer[1]): fi;
+  if myprec = 0 then t := round(minimizer[1]); 
+  else 
+   if minimizer[1] < 0 then t:= ceil(minimizer[1]): else t:= floor(minimizer[1]): fi;
+  fi;
 
 #lprint("prec", evalf(log[2](1/(_interval[2]-_interval[1]))));
 
@@ -502,4 +509,10 @@ end;
 
 MulPolList:= proc(p, l)
   map (el -> p*el, l)
+end;
+
+HornerToList1 := proc(l)
+  local l1;
+  l1 := HornerToList(l);
+  return foldr((a,b) -> [op(a),op(b)], [],op(l1));
 end;
