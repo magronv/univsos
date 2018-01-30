@@ -6,6 +6,7 @@ Sums of squares decomposition of univariate nonnegative polynomials
 
 - `univsos1`, which relies on root isolation, quadratic under approximations of positive polynomials and square-free decomposition.
 - `univsos2`, which relies on root isolation of perturbed positive  polynomials and square-free decomposition.
+- `univsos3`, which relies on sums of squares approximation (via semidefinite programming) of perturbed positive polynomials and square-free decomposition.
 
 ## Installation instructions
 ### Prerequisites
