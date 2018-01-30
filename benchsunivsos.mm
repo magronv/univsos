@@ -25,9 +25,10 @@ BitSizeSeq:=proc(l)
 end;
 
 BitRat := proc(r)
-  local n, d, res;
-  if r = 0 then return 1; fi;
-  (n, d) := (abs(numer(r)), abs(denom(r)));
+  local n, d, res, rs;
+  if type(r,rational) then rs :=r : else rs:=r^2: fi:
+  if rs = 0 then return 1; fi;
+  (n, d) := (abs(numer(rs)), abs(denom(rs)));
   if d = 1 then res :=  ilog2(n) + 1 else res := ilog2(n) + ilog2(d) + 2 fi;
   return res;
 end;
@@ -72,25 +73,30 @@ BenchSOSitv2:=proc(p1,p2,a,b)
   return 0:
 end;
 
-BenchSOSitv3:=proc(p1,p2,a,b,k::integer:=1)
-  local q1,sosq1,q2,sosq2,bits,tverif,bitsq;
+BenchSOSitv3:=proc(p1,p2,a,b,prec::integer:=10,precSVD::integer:=10, precSDP::integer := 200, epsStar::integer := 3, epsDash::integer:=3)
+  local sosg1,sosg2, sosl1, sosl2, bits,tverif,bitsp, ti, tf;
+  ti := time[real]():
   lprint ("Time for Computation of SOS certificates:");
-  q1,sosq1 := UnivariateSumOfSquaresDecItv3(p1,a,b,k);
-  q2,sosq2 := UnivariateSumOfSquaresDecItv3(p2,a,b,k);
+#  q1,sosq1 := UnivariateSumOfSquaresDecItv3(p1,a,b,k);
+#  q2,sosq2 := UnivariateSumOfSquaresDecItv3(p2,a,b,k);
 
-#  q1,sosq1 := sositv3(p1,x,a,b,k);
-#  q2,sosq2 := sositv3(p2,x,a,b,k);
+  sosg1,sosl1 := sositv3(p1,x,a,b,prec,precSVD,precSDP,epsStar,epsDash);
+  sosg2,sosl2 := sositv3(p2,x,a,b,prec,precSVD,precSDP,epsStar,epsDash);
+  tf := time[real]()-ti; 
 
   lprint ("Bitsize of polynomials:");
-  bitsq := BitSizePol(q1,x) +  BitSizePol(q2,x):
-  printf("%d bits\n",bitsq);
+  bitsp := BitSizePol(p1,x) +  BitSizePol(p2,x):
+  printf("%d bits\n",bitsp);
 
   lprint ("Bitsize of SOS certificates:");
-  bits := BitSizePolSeq(sosq1,y) +  BitSizePolSeq(sosq2,y):
+  bits := BitSizePolSeq(sosg1,x) +  BitSizePolSeq(sosg2,x) + BitSizePolSeq(sosl1,x) +  BitSizePolSeq(sosl2,x):
+
   printf("%d bits\n",bits);
 
+  printf("time= %esecs\n",tf);
+
   lprint ("Time for Verification of SOS certificates:");
-  tverif := TimeVerif2(q1,sosq1,3) + TimeVerif2(q2,sosq2,3):
+  tverif := TimeVerif3(p1,a,b,sosg1,sosl1,3) + TimeVerif3(p2,a,b,sosg2,sosl2,3):
   printf("%1.3ems\n",1000*tverif);
   return 0:
 end;
@@ -142,6 +148,7 @@ BenchSOS3:=proc(p,x,id)
 
   ti := time[real]():
   sos := sos3(p,x,id):
+  #lprint(sos);
   tf := time[real]():
   printf("  Time for Computation of SOS certificate = %e ms\n",1000*(tf - ti));
 
@@ -155,7 +162,8 @@ end;
 
 BenchSOSsum:=proc()
  local deg,s;
- s := [10,20,40,60,80,100,200,300,400,500,1000]:
+# s := [10,20,40,60,80,100,200,300,400,500,1000]:
+  s := [1000]:
  for deg in s do BenchSOS(add(x^j,j=0..deg),x) od:
 end;
 
@@ -169,8 +177,9 @@ end;
 
 BenchSOSsum3:=proc(id)
  local deg,s;
- s := [10,20,40,60,80,100,200]:
-# s := [300]:
+#  s := [2];
+#  s := [40,60,80,100,200,500,1000]:
+ s := [10,100,1000,10000]:
  for deg in s do BenchSOS3(add(x^j,j=0..deg),x,id) od:
 end;
 
@@ -255,7 +264,14 @@ local i;
 end;
 
 SOSCHECK:=proc(f, sos)
-return expand(f - foldr((_e, a) -> _e[1]^2 * a + _e[2][1]*_e[2][2]^2 + _e[2][3], 1, op(sos)));
+local res;
+res := expand(f - foldr((_e, a) -> _e[1]^2 * a + _e[2][1]*_e[2][2]^2 + _e[2][3], 1, op(sos)));
+if res = 0 then
+return res;
+else 
+    lprint(f); lprint(sos);
+    error "Invalid sum of squares decomposition";
+fi;
 end;
 
 TimeVerif2:=proc(f,sos,n)
@@ -270,18 +286,35 @@ SOSCHECKn2:=proc(f,sos,n)
 end;
 
 SOSCHECK2:=proc(f, sos)
-  local s,i;
+  local s,i,res;
   s := 0;
-  for i from 1 to nops(sos)/2 do s := s + sos[2*i-1]*sos[2*i]^2 od:
-  return expand(f - s);
+  for i from 1 to nops(sos)/2 do if sos[2*i-1] < 0 then lprint(sos[2*i-1]); error "Invalid sum of squares decomposition"; else s := s + sos[2*i-1]*sos[2*i]^2 fi: od:
+  res := expand(f-s);
+  if res = 0 then
+  return res;
+  else 
+    lprint(f); lprint(sos);
+    error "Invalid sum of squares decomposition";
+fi;
+end;
+
+TimeVerif3:=proc(f,a,b,sosg,sosl,n)
+  local t:
+  t:=time(SOSCHECKn3(f,a,b,sosg,sosl,n)):
+  evalf(t/10^n);
+end;
+
+SOSCHECKn3:=proc(f,a,b,sosg,sosl,n)
+  local i;
+  for i from 1 to 10^n do SOSCHECKitv3(f,a,b,sosg,sosl) od:
 end;
 
 SOSCHECKitv3:=proc(f, a, b, sos, sos2)
   local s,i;
   s := 0;
-  for i from 1 to nops(sos)/2 do s := s + sos[2*i-1]*sos[2*i]^2 od:
-  for i from 1 to nops(sos2)/2 do s := s + (b-x)*(x-a)*sos2[2*i-1]*sos2[2*i]^2 od:
-  return expand(f - s);
+  for i from 1 to nops(sos)/2 do if sos[2*i-1] < 0 then lprint(evalf(sos[2*i-1])); error "Negative numbers => Invalid sum of squares decomposition": else  s := s + sos[2*i-1]*sos[2*i]^2 fi: od:
+  for i from 1 to nops(sos2)/2 do if sos2[2*i-1] < 0 then lprint(evalf(sos[2*i-1])); error "Negative numbers => Invalid sum of squares decomposition": else s := s + (b-x)*(x-a)*sos2[2*i-1]*sos2[2*i]^2 fi: od:
+    if not expand(f - s) = 0 then lprint(evalf(expand(f - s))); error "Invalid sum of squares decomposition"; else return 0: fi:
 end;
 
 confrac2rat := proc (l) 
@@ -289,3 +322,6 @@ confrac2rat := proc (l)
 end;
 
 kernelopts(printbytes=false):
+#deg := 40;
+# p := add(x^(2*i+1)*Generate(rational(denominator=100,character=open..closed)),i=0..(deg/2-1)) + add(x^(2*j),j=0..deg/2);
+# q := p^4 + 1:SOSCHECK2(q,sos3(q,x,2));

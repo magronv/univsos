@@ -10,7 +10,9 @@ Sums of squares decomposition of univariate nonnegative polynomials
 ## Installation instructions
 ### Prerequisites
 `univsos` has been tested with `Maple2016` and requires: 
-- the external `PARI/GP` software available at the address http://pari.math.u-bordeaux.fr/download.html
+- For univsos2: the external `PARI/GP` software available at the address http://pari.math.u-bordeaux.fr/download.html
+- For univsos3: the external `SDPA` software (SDP solver) available at the address https://sourceforge.net/projects/sdpa/files/sdpa/sdpa_7.3.8.tar.gz
+- For univsos3: the external `SDPA-GMP` software (arbitrary-precision SDP solver) available at the address https://sourceforge.net/projects/sdpa/files/sdpa-gmp/sdpa-gmp.7.1.3.src.20150320.tar.gz
 
 
 ### Download
@@ -23,9 +25,9 @@ $ git clone https://github.com/magronv/univsos.git
 ### Execution and Benchmarks
 From the univsos/ directory, launch Maple and execute the following command:
 
-`with(LinearAlgebra): read "univsos1.mm": read "univsos2.mm": read "benchsunivsos.mm": read "benchsollya.mm":`
+`with(LinearAlgebra): read "univsos1.mm": read "univsos2.mm": read "benchsunivsos.mm": read "benchsollya.mm": read "univsos3.mm":`
 
-Let us condier the polynomial f := 1 + X + X^2 + X^3 + X^4. 
+Let us consider the polynomial f := 1 + X + X^2 + X^3 + X^4. 
 To compute a sums of squares decomposition of f, you can:
 
 
@@ -62,6 +64,15 @@ The output is a list [c1,p1,...,cr,pr], where each ci is a rational number and e
 You can verify afterwards that this yields a valid nonnegativty certificate of f with the following command:
 
 `s := 0: for i from 1 to nops(sos)/2 do s := s + sos[2*i-1]*sos[2*i]^2 od: expand (f -s);`
+
+
+3) rely on univsos3
+
+`f := 1 + X + X^2 + X^3 + X^4: sos := sos3(f,X);`
+
+
+The output and verification procedures are the same as for univsos2.
+
 
 #### Benchmarks from the paper https://hal.archives-ouvertes.fr/ensl-00445343v2/document (Section 6)
 #### univsos1
@@ -103,6 +114,24 @@ You can verify afterwards that this yields a valid nonnegativty certificate of f
 `BenchSOSitv2(f9,g9,a9,b9):`
 
 `BenchSOSitv2(f10,g10,a10,b10):`
+
+#### univsos3
+
+`BenchSOSitv3(f1,g1,a1,b1,65,40,200,30,30):`
+
+`BenchSOSitv3(f4,g4,a4,b4,120,30,200,40,40):`
+
+`BenchSOSitv3(f5,g5,a5,b5,240,100,2000,100,100):`
+
+`BenchSOSitv3(f6,g6,a6,b6,100,30,200,30,30):`
+
+`BenchSOSitv3(f7,g7,a7,b7,150,100,300,30,30):`
+
+`BenchSOSitv3(f8,g8,a8,b8,80,40,200,30,30):`
+
+`BenchSOSitv3(f9,g9,a9,b9,80,50,200,30,30):`
+
+`BenchSOSitv3(f10,g10,a10,b10,100,40,300,30,30):`
 
 #### Benchmarks for nonnegative power sums of increasing degrees 1 + X + X^2 + ... + X^n
 #### univsos1
