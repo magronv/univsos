@@ -37,4 +37,8 @@ in.gp
 out.mm
 *.dat-s
 out.gp
+*.vrb
+*.DS_Store
+*.fls
+*.fdb_latexmk
 my_param_gmp.sdpa
