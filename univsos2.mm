@@ -1,3 +1,6 @@
+$define usegp false
+
+
 sos2:=proc(p,x,id::integer := 2,iter::boolean := false)
   local S,s,c,SEVEN,SODD,q,n,m,t,e,r,k,ok,l,a,p_can,p_cnj,s1,s2,u,v,i,j,sqs,cfs,sos,rfloat,gp,gproots;
 
@@ -42,7 +45,7 @@ sos2:=proc(p,x,id::integer := 2,iter::boolean := false)
   while not ok do 
     k := k+1;
     l := lcoeff(r,x):
-    gproots := true; gp := true;
+    gproots := usegp; gp := usegp;
     if gp then s1, s2 := gpsquares(r,x,k,iter): 
     else 
       a := polroots(r,x,gproots,iter);
@@ -185,4 +188,21 @@ polroots := proc(r,x,gproots)
      a := [fsolve([r=0],x,complex,fulldigits)]: 
      return map(sol-> rhs(sol[1]),a):
     fi:
+end;
+
+SOSCHECK2:=proc(f, sos)
+  local s,i,res;
+  s := 0;
+  for i from 1 to nops(sos)/2 do s := s + sos[2*i-1]*sos[2*i]^2 od:
+  res := expand(f-s);
+  if res = 0 then
+  return res;
+  else 
+    lprint(f); lprint(sos);
+    error "Invalid sum of squares decomposition";
+fi;
+end;
+
+soscheck2 := proc(f,sos)
+  return SOSCHECK2(f,sos);
 end;
